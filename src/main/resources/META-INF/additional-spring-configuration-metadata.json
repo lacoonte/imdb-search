@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "elasticsearch.host",
+    "type": "java.lang.String",
+    "description": "ElasticSearch host"
+  },
+  {
+    "name": "elasticsearch.port",
+    "type": "java.lang.String",
+    "description": "ElasticSearch port"
+  }
+]}
