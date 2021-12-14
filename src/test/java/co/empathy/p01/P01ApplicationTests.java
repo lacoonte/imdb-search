@@ -20,11 +20,23 @@ class P01ApplicationTests {
 	}
 
 	@Test
-	void searchQuery() throws Exception{
+	void searchQuery() throws Exception {
+		//Text query
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
-		.andExpect(MockMvcResultMatchers.status().isOk())
-		.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-		.andExpect(MockMvcResultMatchers.jsonPath("$.query").value("test"))
-		.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value("docker-cluster"));
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.query").value("test"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value("docker-cluster"));
+
+		//Empty query
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", ""))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.query").value(""))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value("docker-cluster"));
+
+		//No query
+		mvc.perform(MockMvcRequestBuilders.get("/search"))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 }
