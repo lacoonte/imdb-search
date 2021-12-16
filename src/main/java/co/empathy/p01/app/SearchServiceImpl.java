@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class SearchServiceImpl implements SearchService{
+public class SearchServiceImpl implements SearchService {
 
     private final RestHighLevelClient cli;
 
@@ -18,7 +18,8 @@ public class SearchServiceImpl implements SearchService{
 
     @Override
     public String search(String query) {
-        if(query.isEmpty()) throw new IllegalArgumentException("The query can't be empty");
+        if (query.isEmpty())
+            throw new IllegalArgumentException("The query can't be empty");
         return query;
     }
 
@@ -35,5 +36,5 @@ public class SearchServiceImpl implements SearchService{
             throw new ClusterNameUnavailableException(e);
         }
     }
-    
+
 }
