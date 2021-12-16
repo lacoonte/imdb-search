@@ -1,4 +1,4 @@
-package co.empathy.p01.config;
+package co.empathy.p01.infra;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Scope;
 
 @Configuration
 public class ElasticClientConfig {
+    public final static String DEFAULT_CLUSTER_NAME = "docker-cluster";
+    
     @Value("${elasticsearch.host}")
     private String host;
 

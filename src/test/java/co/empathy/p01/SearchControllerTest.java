@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class P01ApplicationTests {
+class SearchControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
@@ -21,22 +21,22 @@ class P01ApplicationTests {
 
 	@Test
 	void searchQuery() throws Exception {
-		//Text query
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.query").value("test"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value("docker-cluster"));
+	}
 
-		//Empty query
+	@Test
+	void searchEmptyQuery() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", ""))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.query").value(""))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value("docker-cluster"));
+		.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
 
-		//No query
+	@Test
+	void searchNoQuery() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search"))
-				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+		.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 }
