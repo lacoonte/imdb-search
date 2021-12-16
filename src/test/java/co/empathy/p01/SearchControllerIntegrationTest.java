@@ -1,25 +1,36 @@
 package co.empathy.p01;
 
-import static org.mockito.ArgumentMatchers.anyString;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
 
-import co.empathy.p01.app.SearchService;
 import co.empathy.p01.infra.ElasticClientConfig;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SearchControllerTest {
-	@MockBean
-	SearchService searchService;
+class SearchControllerIntegrationTest {
+
+	@BeforeAll
+	static void setUp() {
+		CONTAINER.start();
+	}
+	
+	@AfterAll
+	static void destroy() {
+		CONTAINER.stop();
+	}
+
+	@Container
+	private final static ElasticsearchContainer CONTAINER = new TestElasticsearchContainer();
 
 	@Autowired
 	private MockMvc mvc;
@@ -27,12 +38,9 @@ class SearchControllerTest {
 	@Test
 	void contextLoads() {
 	}
-
+  
 	@Test
 	void searchQuery() throws Exception {
-		Mockito.when(searchService.search(anyString())).thenAnswer(invocation -> invocation.getArgument(0));
-		Mockito.when(searchService.getClusterName()).thenAnswer(invocation -> ElasticClientConfig.DEFAULT_CLUSTER_NAME);
-
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
@@ -42,8 +50,6 @@ class SearchControllerTest {
 
 	@Test
 	void searchEmptyQuery() throws Exception {
-		Mockito.when(searchService.search(anyString())).thenThrow(new IllegalArgumentException());
-
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", ""))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
