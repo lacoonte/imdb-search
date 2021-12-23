@@ -3,7 +3,6 @@ package co.empathy.p01;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -15,31 +14,26 @@ import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRespons
 import org.elasticsearch.client.ClusterClient;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import co.empathy.p01.app.ClusterNameUnavailableException;
+import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.app.SearchService;
-import co.empathy.p01.app.SearchServiceImpl;
-import co.empathy.p01.controllers.ClusterNameNotFoundAdvice;
 
 @SpringBootTest
 class SearchServiceUnitTest {
 
     @MockBean
     private RestHighLevelClient restClient;
-    
+
     @Autowired
     private SearchService service;
 
     @Test
-	void contextLoads() {
-	}
+    void contextLoads() {
+    }
 
     @Test
     void clusterName() throws Exception {
@@ -51,7 +45,7 @@ class SearchServiceUnitTest {
         when(clusterClient.getSettings(any(ClusterGetSettingsRequest.class), eq(RequestOptions.DEFAULT)))
                 .thenReturn(settingsResponse);
         var result = service.getClusterName();
-        assertEquals(expected,result);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -60,14 +54,14 @@ class SearchServiceUnitTest {
         when(restClient.cluster()).thenReturn(clusterClient);
         when(clusterClient.getSettings(any(ClusterGetSettingsRequest.class), eq(RequestOptions.DEFAULT)))
                 .thenThrow(new IOException());
-        assertThrows(ClusterNameUnavailableException.class, service::getClusterName);
+        assertThrows(ElasticUnavailableException.class, service::getClusterName);
     }
 
     @Test
     void searchQuery() throws Exception {
         var query = "query";
         assertEquals(query, service.search(query));
-        assertThrows(ClusterNameUnavailableException.class, service::getClusterName);
+        assertThrows(ElasticUnavailableException.class, service::getClusterName);
     }
 
     @Test

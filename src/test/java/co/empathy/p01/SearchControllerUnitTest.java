@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import co.empathy.p01.app.ClusterNameUnavailableException;
+import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.app.SearchService;
 import co.empathy.p01.infra.ElasticClientConfig;
 
@@ -57,7 +57,7 @@ class SearchControllerUnitTest {
 
 	@Test
 	void searchGetClusterNameFail() throws Exception {
-		Mockito.when(searchService.getClusterName()).thenThrow(new ClusterNameUnavailableException());
+		Mockito.when(searchService.getClusterName()).thenThrow(new ElasticUnavailableException());
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
 				.andExpect(MockMvcResultMatchers.status().isInternalServerError());
 	}

@@ -2,6 +2,7 @@ package co.empathy.p01.infra;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -20,9 +21,17 @@ public class ElasticClientConfig {
     private int port;
 
     @Bean
+    public RestClientBuilder clientBuilder() {
+        return RestClient.builder(new HttpHost(host, port, "http"));
+    }
+
+    @Bean RestClient lowClient() {
+        return clientBuilder().build();
+    }
+
+    @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public RestHighLevelClient restClient() {
-        return new RestHighLevelClient(
-            RestClient.builder(new HttpHost(host, port, "http")));
+        return new RestHighLevelClient(clientBuilder());
     }
 }

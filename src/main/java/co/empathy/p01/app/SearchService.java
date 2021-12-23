@@ -1,18 +1,23 @@
 package co.empathy.p01.app;
 
+import java.io.IOException;
+
+import io.micrometer.core.instrument.search.Search;
+
 public interface SearchService {
     
     /**
      * Searches for the query.
      * @param query
      * @return The search result.
+     * @throws ElasticUnavailableException If we could not reach any elastic node.
      */
-    String search(String query);
+    SearchServiceResult search(String query) throws ElasticUnavailableException;
 
     /**
      * Gets the name from the ElasticSerach Cluster.
      * @return Cluster's name.
-     * @throws ClusterNameUnavailableException If it couldn't get the name.
+     * @throws ElasticUnavailableException If we could not reach any elastic node.
      */
-    String getClusterName() throws ClusterNameUnavailableException;
+    String getClusterName() throws ElasticUnavailableException;
 }
