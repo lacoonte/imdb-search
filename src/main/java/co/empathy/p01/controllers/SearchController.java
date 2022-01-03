@@ -12,7 +12,6 @@ import org.springframework.web.server.ResponseStatusException;
 import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.app.SearchService;
 import co.empathy.p01.app.SearchServiceResult;
-import co.empathy.p01.responses.SearchDtoResponse;
 
 @RestController
 public class SearchController {

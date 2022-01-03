@@ -1,5 +1,7 @@
 package co.empathy.p01;
 
+import java.io.File;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,16 +14,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-
 @SpringBootTest
 @AutoConfigureMockMvc
 public class IndexControllerIntegrationTest {
-    
+
 	@BeforeAll
 	static void setUp() {
 		CONTAINER.start();
 	}
-	
+
 	@AfterAll
 	static void destroy() {
 		CONTAINER.stop();
@@ -37,10 +38,12 @@ public class IndexControllerIntegrationTest {
 	void contextLoads() {
 	}
 
-    @Test
+	@Test
 	void index() throws Exception {
-        var path = "/Users/alvaro/dev/academy/p01/src/main/resources/data.tsv";
-        mvc.perform(MockMvcRequestBuilders.post("/index").param("path", path))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = new File(classLoader.getResource("testsample.tsv").getFile());
+		String absolutePath = file.getAbsolutePath();
+		mvc.perform(MockMvcRequestBuilders.post("/index").param("path", absolutePath))
+				.andExpect(MockMvcResultMatchers.status().isOk());
 	}
 }

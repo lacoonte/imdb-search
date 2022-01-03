@@ -23,5 +23,8 @@ public class IndexController {
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
         }
+        catch (InterruptedException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

@@ -57,12 +57,12 @@ class SearchServiceUnitTest {
         assertThrows(ElasticUnavailableException.class, service::getClusterName);
     }
 
-    @Test
-    void searchQuery() throws Exception {
-        var query = "query";
-        assertEquals(query, service.search(query));
-        assertThrows(ElasticUnavailableException.class, service::getClusterName);
-    }
+    // @Test
+    // void searchQuery() throws Exception {
+    //     var query = "query";
+    //     assertEquals(query, service.search(query));
+    //     assertThrows(ElasticUnavailableException.class, service::getClusterName);
+    // }
 
     @Test
     void searchEmptyQuery() throws Exception {

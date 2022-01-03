@@ -1,6 +1,9 @@
 package co.empathy.p01;
 
 
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,17 +16,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 
-import co.empathy.p01.infra.ElasticClientConfig;
+import co.empathy.p01.app.TitleIndexService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class SearchControllerIntegrationTest {
-
-	@BeforeAll
-	static void setUp() {
-		CONTAINER.start();
-	}
 	
+	@BeforeAll
+	static void setUp(@Autowired TitleIndexService service) throws IOException, InterruptedException {
+		CONTAINER.start();
+		ClassLoader classLoader = SearchControllerIntegrationTest.class.getClassLoader();
+		File file = new File(classLoader.getResource("testsample.tsv").getFile());
+		String absolutePath = file.getAbsolutePath();
+		service.indexTitlesFromTabFile(absolutePath);
+	}
+
 	@AfterAll
 	static void destroy() {
 		CONTAINER.stop();
@@ -44,8 +51,7 @@ class SearchControllerIntegrationTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.query").value("test"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.clusterName").value(ElasticClientConfig.DEFAULT_CLUSTER_NAME));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.total").value("1"));
 	}
 
 	@Test
