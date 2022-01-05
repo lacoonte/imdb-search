@@ -6,7 +6,13 @@
   },
   {
     "name": "elasticsearch.port",
-    "type": "java.lang.String",
+    "type": "java.lang.Integer",
     "description": "ElasticSearch port"
+  },
+  {
+    "name": "elasticsearch.waits",
+    "type": "java.lang.Boolean",
+    "description": "A description for 'elasticsearch.waits'"
   }
-]}
+]
+}

@@ -4,25 +4,26 @@ import org.apache.http.HttpHost;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
+import co.empathy.p01.config.ElasticConfiguration;
+
 @Configuration
 public class ElasticClientConfig {
     public final static String DEFAULT_CLUSTER_NAME = "docker-cluster";
-    
-    @Value("${elasticsearch.host}")
-    private String host;
 
-    @Value("${elasticsearch.port}")
-    private int port;
+    private final ElasticConfiguration config;
+
+    public ElasticClientConfig(ElasticConfiguration config) {
+        this.config = config;
+    }
 
     @Bean
     public RestClientBuilder clientBuilder() {
-        return RestClient.builder(new HttpHost(host, port, "http"));
+        return RestClient.builder(new HttpHost(config.host(), config.port(), "http"));
     }
 
     @Bean RestClient lowClient() {

@@ -1,4 +1,4 @@
-package co.empathy.p01.app;
+package co.empathy.p01.app.index.parser;
 
 import java.util.List;
 

@@ -4,7 +4,6 @@ package co.empathy.p01;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,37 +12,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.junit.jupiter.Container;
 
-import co.empathy.p01.app.TitleIndexService;
+import co.empathy.p01.app.index.TitleIndexService;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class SearchControllerIntegrationTest {
+class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	
+	@Autowired
+	private MockMvc mvc;
+
 	@BeforeAll
 	static void setUp(@Autowired TitleIndexService service) throws IOException, InterruptedException {
 		CONTAINER.start();
 		ClassLoader classLoader = SearchControllerIntegrationTest.class.getClassLoader();
 		File file = new File(classLoader.getResource("testsample.tsv").getFile());
 		String absolutePath = file.getAbsolutePath();
-		service.indexTitlesFromTabFile(absolutePath);
-	}
-
-	@AfterAll
-	static void destroy() {
-		CONTAINER.stop();
-	}
-
-	@Container
-	private final static ElasticsearchContainer CONTAINER = new TestElasticsearchContainer();
-
-	@Autowired
-	private MockMvc mvc;
-
-	@Test
-	void contextLoads() {
+		service.indexTitlesFromTabFile(absolutePath, false);
 	}
   
 	@Test

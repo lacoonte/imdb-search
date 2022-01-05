@@ -1,4 +1,4 @@
-package co.empathy.p01.app;
+package co.empathy.p01.app.search;
 
 import java.util.List;
 

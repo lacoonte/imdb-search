@@ -1,4 +1,4 @@
-package co.empathy.p01.app;
+package co.empathy.p01.app.search;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +16,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.model.Title;
 
 @Service
@@ -29,9 +30,9 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchServiceResult search(String query) throws ElasticUnavailableException {
+    public SearchServiceResult search(String query) throws ElasticUnavailableException, EmptyQueryException {
         if (query.isEmpty())
-            throw new IllegalArgumentException("The query can't be empty");
+            throw new EmptyQueryException();
 
         var rq = new SearchRequest("imdb");
 
@@ -51,6 +52,7 @@ public class SearchServiceImpl implements SearchService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Title mapTitle(String id, Map<String, Object> map) {
         return new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
                 (String) map.get("originalTitle"), (Boolean) map.get("isAdult"), (Integer) map.get("startYear"),
