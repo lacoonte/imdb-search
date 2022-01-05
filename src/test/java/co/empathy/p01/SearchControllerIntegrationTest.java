@@ -1,6 +1,5 @@
 package co.empathy.p01;
 
-
 import java.io.File;
 import java.io.IOException;
 
@@ -18,7 +17,7 @@ import co.empathy.p01.app.index.TitleIndexService;
 @SpringBootTest
 @AutoConfigureMockMvc
 class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
-	
+
 	@Autowired
 	private MockMvc mvc;
 
@@ -30,7 +29,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		String absolutePath = file.getAbsolutePath();
 		service.indexTitlesFromTabFile(absolutePath, false);
 	}
-  
+
 	@Test
 	void searchQuery() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "test"))
@@ -43,6 +42,14 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	void searchEmptyQuery() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", ""))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	void searchNoResults() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "sldkfjkkk"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.total").value("0"));
 	}
 
 	@Test
