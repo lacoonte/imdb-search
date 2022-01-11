@@ -1,0 +1,7 @@
+tconst	titleType	primaryTitle	originalTitle	isAdult	startYear	endYear	runtimeMinutes	genres
+tt0100669	short	Spiderman	Spiderman	0	1990	\N	5	Short
+tt0145487	movie	Spider-Man	Spider-Man	0	2002	\N	121	Action,Adventure,Sci-Fi
+tt0113495	tvEpisode	L'enfant témoin	L'enfant témoin	0	1994	\N	89	Crime,Drama
+tt0100507	movie	Rocky V	Rocky V	0	1990	\N	104	Drama,Sport
+tt0434409	movie	V for Vendetta	V for Vendetta	0	2005	\N	132	Action,Drama,Sci-Fi
+tt0077440	movie	Jukebox	Disco Fever	0	1978	\N	92	Drama,Music

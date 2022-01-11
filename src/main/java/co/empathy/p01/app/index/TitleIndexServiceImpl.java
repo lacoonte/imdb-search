@@ -1,6 +1,7 @@
 package co.empathy.p01.app.index;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.ByteSizeUnit;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.empathy.p01.app.index.parser.TitleParser;
+import co.empathy.p01.config.ElasticConfiguration;
 import co.empathy.p01.model.Title;
 import org.slf4j.Logger;
 
@@ -31,20 +34,24 @@ public class TitleIndexServiceImpl implements TitleIndexService {
     private final RestHighLevelClient cli;
     private final ObjectMapper mapper;
     private final Logger logger = LoggerFactory.getLogger(TitleIndexServiceImpl.class);
+    private final ElasticConfiguration config;
 
     @Autowired
-    public TitleIndexServiceImpl(TitleParser titleParser, RestHighLevelClient cli) {
+    public TitleIndexServiceImpl(TitleParser titleParser, RestHighLevelClient cli, ElasticConfiguration config) {
         this.titleParser = titleParser;
         this.cli = cli;
         this.mapper = new ObjectMapper();
+        this.config = config;
     }
 
     @Override
-    public void indexTitlesFromTabFile(String path, boolean waitForIndexing) throws IOException, InterruptedException {
+    public void indexTitlesFromTabFile(String path) throws IOException, InterruptedException {
+        createIndex();
+
         var pathObj = Paths.get(path);
         var stream = Files.lines(pathObj);
 
-        var listener = new BulkListener(logger, waitForIndexing);
+        var listener = new BulkListener(logger, config.waits());
         var builder = BulkProcessor.builder(
                 (request, bulkListener) -> cli.bulkAsync(request, RequestOptions.DEFAULT, bulkListener), listener,
                 "bulk-processor-name");
@@ -53,7 +60,15 @@ public class TitleIndexServiceImpl implements TitleIndexService {
         var processor = builder.build();
         stream.skip(1).map(s -> titleParser.parseTitle(s)).map(t -> buildRequest(t)).forEach(rq -> processor.add(rq));
         stream.close();
-        processor.awaitClose(100000L, TimeUnit.MINUTES); 
+        processor.awaitClose(100000L, TimeUnit.MINUTES);
+    }
+
+    private void createIndex() throws IOException {
+        var mappingStream = getClass().getClassLoader().getResourceAsStream("mapping.json");
+        var mappings = new String(mappingStream.readAllBytes(), StandardCharsets.UTF_8);
+        var rq = new Request("PUT", "/" + config.indexName());
+        rq.setJsonEntity(mappings);
+        cli.getLowLevelClient().performRequest(rq);
     }
 
     private String serialize(Title t) {
@@ -71,7 +86,7 @@ public class TitleIndexServiceImpl implements TitleIndexService {
 
     private IndexRequest buildRequest(Title t) {
         var json = serialize(t);
-        var rq = new IndexRequest("imdb");
+        var rq = new IndexRequest(config.indexName());
         rq.id(t.id());
         rq.source(json, XContentType.JSON);
         return rq;

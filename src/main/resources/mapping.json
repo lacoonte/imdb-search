@@ -1,0 +1,78 @@
+{
+    "mappings": {
+        "properties": {
+            "endYear": {
+                "type": "long"
+            },
+            "genres": {
+                "type": "text"
+            },
+            "isAdult": {
+                "type": "boolean"
+            },
+            "originalTitle": {
+                "type": "text"
+            },
+            "primaryTitle": {
+                "type": "text",
+                "analyzer": "custom_analyzer"
+            },
+            "runtimeMinutes": {
+                "type": "long"
+            },
+            "startYear": {
+                "type": "long"
+            },
+            "type": {
+                "type": "text"
+            }
+        }
+    },
+    "settings": {
+        "analysis": {
+            "analyzer": {
+                "custom_analyzer": {
+                    "type": "custom",
+                    "tokenizer": "whitespace",
+                    "char_filter": [
+                        "html_strip"
+                    ],
+                    "filter": [
+                        "trim",
+                        "lowercase",
+                        "asciifolding",
+                        "roman_numerals",
+                        "custom_word_delimiter",
+                        "flatten_graph"
+                    ]
+                }
+            },
+            "filter": {
+                "custom_word_delimiter": {
+                    "type": "word_delimiter_graph",
+                    "catenate_all": true
+                },
+                "roman_numerals": {
+                    "type": "synonym",
+                    "synonyms": [
+                        "i, 1",
+                        "ii, 2",
+                        "iii, 3",
+                        "iv, 4",
+                        "v, 5",
+                        "vi, 6",
+                        "vii, 7",
+                        "viii, 8",
+                        "ix, 9",
+                        "x, 10",
+                        "xi, 11",
+                        "xii, 12",
+                        "xiii, 13",
+                        "xiv, 14",
+                        "xv, 15"
+                    ]
+                }
+            }
+        }
+    }
+}

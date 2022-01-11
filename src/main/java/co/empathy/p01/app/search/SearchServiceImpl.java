@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
 
-
 import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
@@ -17,16 +16,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.empathy.p01.app.ElasticUnavailableException;
+import co.empathy.p01.config.ElasticConfiguration;
 import co.empathy.p01.model.Title;
 
 @Service
 public class SearchServiceImpl implements SearchService {
 
     private final RestHighLevelClient cli;
+    private final ElasticConfiguration config;
 
     @Autowired
-    public SearchServiceImpl(RestHighLevelClient cli, RestClient lowCli) {
+    public SearchServiceImpl(RestHighLevelClient cli, ElasticConfiguration config) {
         this.cli = cli;
+        this.config = config;
     }
 
     @Override
@@ -34,12 +36,20 @@ public class SearchServiceImpl implements SearchService {
         if (query.isEmpty())
             throw new EmptyQueryException();
 
-        var rq = new SearchRequest("imdb");
+        var rq = new SearchRequest(config.indexName());
+
+      /*   var rqBuilder = new SearchSourceBuilder();
+        var boolBuilder = new BoolQueryBuilder();
+        var movieQ = QueryBuilders.matchQuery("type", "movie");
+        boolBuilder.should(QueryBuilders.matchQuery("primaryTitle", query));
+        boolBuilder.must(movieQ);
+        rqBuilder.query(boolBuilder);
+        rq.source(rqBuilder); */
 
         var rqBuilder = new SearchSourceBuilder();
         rqBuilder.query(QueryBuilders.matchQuery("primaryTitle", query));
         rq.source(rqBuilder);
-        
+
         try {
             var response = cli.search(rq, RequestOptions.DEFAULT);
             var hits = response.getHits();

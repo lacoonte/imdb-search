@@ -13,6 +13,10 @@
     "name": "elasticsearch.waits",
     "type": "java.lang.Boolean",
     "description": "A description for 'elasticsearch.waits'"
+  },
+  {
+    "name": "elasticsearch.index-name",
+    "type": "java.lang.String",
+    "description": "A description for 'elasticsearch.index-name'"
   }
-]
-}
+]}

@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import co.empathy.p01.config.ElasticConfiguration;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -26,6 +28,9 @@ public class IndexControllerIntegrationTest extends ElasticContainerBaseTest {
 
 	@Autowired
 	private RestClient cli;
+
+	@Autowired
+	private ElasticConfiguration config;
 
 	@Test
 	void index() throws Exception {
@@ -39,7 +44,7 @@ public class IndexControllerIntegrationTest extends ElasticContainerBaseTest {
 	}
 
 	private long countIndex() throws IOException {
-		var rq = new Request("GET", "/_cat/count/imdb");
+		var rq = new Request("GET", "/_cat/count/" + config.indexName());
 		var response = cli.performRequest(rq);
 		String responseBody = EntityUtils.toString(response.getEntity());
 		var sSplsit = responseBody.split(" ");

@@ -1,13 +1,9 @@
 # IMDB Search
-## Endpoints
-### Search endpoint
-```
-/search?query=
-```
-Returns a JSON with the following format:
-```JSON
-{
-    "query": "queryText",
-    "clusterName": "clusterName"
-}
-```
+
+Test project for learning ElasticSearch. It currently searches the IMDB database for media.
+
+# Endpoints
+
+At the moment, there are only two endpoints:
+* [Index .tsv file](doc/index.md) : `POST /index?path=`
+* [Search for a title](doc/search.md) : `GET /search?query=`
