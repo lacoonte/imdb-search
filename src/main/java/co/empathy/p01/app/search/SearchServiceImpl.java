@@ -8,7 +8,6 @@ import java.util.stream.StreamSupport;
 import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;

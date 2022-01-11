@@ -14,12 +14,14 @@ import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.ResponseException;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.unit.ByteSizeUnit;
 import org.elasticsearch.common.unit.ByteSizeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import co.empathy.p01.app.index.parser.TitleParser;
@@ -45,10 +47,15 @@ public class TitleIndexServiceImpl implements TitleIndexService {
     }
 
     @Override
-    public void indexTitlesFromTabFile(String path) throws IOException, InterruptedException {
-        createIndex();
+    public void indexTitlesFromTabFile(String path)
+            throws IOException, IndexAlreadyExistsException, IndexFailedException, TitlesFileNotExistsExcetion {
 
         var pathObj = Paths.get(path);
+        if (Files.notExists(pathObj))
+            throw new TitlesFileNotExistsExcetion(path);
+
+        createIndex();
+
         var stream = Files.lines(pathObj);
 
         var listener = new BulkListener(logger, config.waits());
@@ -60,15 +67,29 @@ public class TitleIndexServiceImpl implements TitleIndexService {
         var processor = builder.build();
         stream.skip(1).map(s -> titleParser.parseTitle(s)).map(t -> buildRequest(t)).forEach(rq -> processor.add(rq));
         stream.close();
-        processor.awaitClose(100000L, TimeUnit.MINUTES);
+        try {
+            processor.awaitClose(100000L, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+            throw new IndexFailedException(e);
+        }
     }
 
-    private void createIndex() throws IOException {
+    private void createIndex() throws IOException, IndexAlreadyExistsException {
         var mappingStream = getClass().getClassLoader().getResourceAsStream("mapping.json");
         var mappings = new String(mappingStream.readAllBytes(), StandardCharsets.UTF_8);
         var rq = new Request("PUT", "/" + config.indexName());
         rq.setJsonEntity(mappings);
-        cli.getLowLevelClient().performRequest(rq);
+        try {
+            cli.getLowLevelClient().performRequest(rq);
+        } catch (ResponseException e) {
+            logger.error(e.getMessage(), e);
+            //TODO: Research if we have a more accurate way of detecting resource_already_exists error.
+            if (e.getResponse().getStatusLine().getStatusCode() == HttpStatus.BAD_REQUEST.value())
+                throw new IndexAlreadyExistsException(e);
+            else
+                throw e;
+        }
     }
 
     private String serialize(Title t) {

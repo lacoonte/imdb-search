@@ -13,7 +13,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import co.empathy.p01.app.index.IndexAlreadyExistsException;
+import co.empathy.p01.app.index.IndexFailedException;
 import co.empathy.p01.app.index.TitleIndexService;
+import co.empathy.p01.app.index.TitlesFileNotExistsExcetion;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -23,7 +26,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	private MockMvc mvc;
 
 	@BeforeAll
-	static void setUp(@Autowired TitleIndexService service) throws IOException, InterruptedException {
+	static void setUp(@Autowired TitleIndexService service) throws IOException, IndexAlreadyExistsException, IndexFailedException, TitlesFileNotExistsExcetion {
 		CONTAINER.start();
 		ClassLoader classLoader = SearchControllerIntegrationTest.class.getClassLoader();
 		File file = new File(classLoader.getResource("search_integration_test.tsv").getFile());

@@ -9,8 +9,10 @@ public interface TitleIndexService {
      * Indexes all titles from a Tab separated file, empty fields should be
      * represented with \N
      * @param path The .tsv file path
-     * @throws InterruptedException
-     * @throws ElasticUnavailableException
+     * @throws IndexAlreadyExistsException If the configured index already exists.
+     * @throws IndexFailedException If indexing process failed.
+     * @throws TitlesFileNotExistsExcetion
+     * @throws ElasticUnavailableException If ElasticSearch is not available.
      */
-    public void indexTitlesFromTabFile(String path) throws IOException, InterruptedException;
+    public void indexTitlesFromTabFile(String path) throws IOException, IndexAlreadyExistsException, IndexFailedException, TitlesFileNotExistsExcetion;
 }
