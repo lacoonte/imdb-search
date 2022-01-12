@@ -21,15 +21,10 @@ public class ElasticClientConfig {
         this.config = config;
     }
 
-    @Bean
-    public RestClientBuilder clientBuilder() {
+    private RestClientBuilder clientBuilder() {
         return RestClient.builder(new HttpHost(config.host(), config.port(), "http"));
     }
-
-    @Bean RestClient lowClient() {
-        return clientBuilder().build();
-    }
-
+    
     @Bean
     @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
     public RestHighLevelClient restClient() {
