@@ -1,6 +1,7 @@
 package co.empathy.p01.controllers;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +20,10 @@ public class SearchController {
     private SearchService service;
 
     @GetMapping("/search")
-    public SearchServiceResult main(@RequestParam String query) throws ElasticUnavailableException, IOException, EmptyQueryException {
-        var result = service.search(query);
+    public SearchServiceResult main(@RequestParam String query, @RequestParam(defaultValue = "") List<String> genres,
+            @RequestParam(defaultValue = "") List<String> types)
+            throws ElasticUnavailableException, IOException, EmptyQueryException {
+        var result = service.search(query, genres, types);
         return result;
     }
 }
