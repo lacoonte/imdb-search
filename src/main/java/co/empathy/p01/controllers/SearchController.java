@@ -12,6 +12,7 @@ import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.app.search.EmptyQueryException;
 import co.empathy.p01.app.search.SearchService;
 import co.empathy.p01.app.search.SearchServiceResult;
+import co.empathy.p01.app.search.YearFilter;
 
 @RestController
 public class SearchController {
@@ -21,9 +22,9 @@ public class SearchController {
 
     @GetMapping("/search")
     public SearchServiceResult main(@RequestParam String query, @RequestParam(defaultValue = "") List<String> genres,
-            @RequestParam(defaultValue = "") List<String> types)
+            @RequestParam(defaultValue = "") List<String> types, @RequestParam(defaultValue = "") List<YearFilter> years)
             throws ElasticUnavailableException, IOException, EmptyQueryException {
-        var result = service.search(query, genres, types);
+        var result = service.search(query, genres, types, years);
         return result;
     }
 }

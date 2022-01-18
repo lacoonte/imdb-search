@@ -242,7 +242,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
 
 		// Now test the filter, only the romance movie should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "movie").param("genres", "romance"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "movie").param("genres", "Romance"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -252,6 +252,105 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	@Test
 	void searchNoQueryParam() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search"))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	void searchWithSingleDateRange() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+
+		// Now only the movies from 1960 to 2021 (both included) should appear
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1960/2021"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(show1960Id, movie2003Id, movie2021Id)));
+	}
+
+	@Test
+	void searchWithMultipleDateRanges() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+
+		// Now only from 1916 to 1960 (both included) and from 2021 should appear
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916/1960", "2021/2022"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(show1960Id, movie2021Id, short1916Id)));
+	}
+
+	@Test
+	void searchWithSingleDateInDateRangesParam() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+
+		// Now only 1916 should appear
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id)));
+	}
+
+	@Test
+	void searchWithSingleDateAndRangeParam() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+
+		// Now only 1916 should appear
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916").param("years", "2003/2021"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, movie2003Id, movie2021Id)));
+	}
+
+	@Test
+	void searchWithDashedDateRange() throws Exception {
+		// If years are separated by a dash, it should throw BadRequest.
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916-1920"))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 

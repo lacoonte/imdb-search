@@ -3,15 +3,15 @@ package co.empathy.p01.app.search;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
-import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,51 +32,48 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchServiceResult search(String query, List<String> genres, List<String> types)
+    public SearchServiceResult search(String query, List<String> genres, List<String> types, List<YearFilter> years)
             throws ElasticUnavailableException, EmptyQueryException {
         if (query.isEmpty())
             throw new EmptyQueryException();
 
-        var rq = new SearchRequest(config.indexName());
-
-        var rqBuilder = new SearchSourceBuilder();
-        var titleQuery = QueryBuilders.matchQuery("primaryTitle", query);
-        if (genres.isEmpty() && types.isEmpty()) {
-            rqBuilder.query(titleQuery);
-        } else if (!genres.isEmpty() && !types.isEmpty()) {
-            var boolBuilder = new BoolQueryBuilder();
-            var genresBoolBuilder = new BoolQueryBuilder();
-            var typesBoolBuilder = new BoolQueryBuilder();
-            genresBoolBuilder.minimumShouldMatch(1);
-            typesBoolBuilder.minimumShouldMatch(1);
-
-            genres.forEach(genre -> genresBoolBuilder.should(QueryBuilders.matchQuery("genres", genre)));
-            types.forEach(type -> typesBoolBuilder.should(QueryBuilders.matchQuery("type", type)));
-
-            boolBuilder.must(titleQuery);
-            boolBuilder.must(genresBoolBuilder);
-            boolBuilder.must(typesBoolBuilder);
-            rqBuilder.query(boolBuilder);
-        } else {
-            var boolBuilder = new BoolQueryBuilder();
-            boolBuilder.minimumShouldMatch(1);
-            genres.forEach(genre -> boolBuilder.should(QueryBuilders.matchQuery("genres", genre)));
-            types.forEach(type -> boolBuilder.should(QueryBuilders.matchQuery("type", type)));
-            boolBuilder.must(titleQuery);
-            rqBuilder.query(boolBuilder);
-        }
-        rq.source(rqBuilder);
+        var searchRqBuilder = new SearchTitleRequestBuilder(query, config.indexName());
+        if (!genres.isEmpty())
+            searchRqBuilder.addGenresFilter(genres);
+        if (!types.isEmpty())
+            searchRqBuilder.addTypesFilter(types);
+        if (!years.isEmpty())
+            searchRqBuilder.addYearsFilter(years);
+        var rq = searchRqBuilder.buildSearchRequest();
 
         try {
             var response = cli.search(rq, RequestOptions.DEFAULT);
             var hits = response.getHits();
             var titles = StreamSupport.stream(hits.spliterator(), true)
                     .map(hit -> mapTitle(hit.getId(), hit.getSourceAsMap())).toList();
-            var result = new SearchServiceResult(hits.getTotalHits().value, titles);
+            var genresAgg = getAggregation("genres", response);
+            var typeAgg = getAggregation("type", response);
+            var rangesAgg = getRangeAggregation(response);
+            var result = new SearchServiceResult(hits.getTotalHits().value, titles,
+                    new Agregations(genresAgg, typeAgg, rangesAgg));
             return result;
         } catch (IOException e) {
             throw new ElasticUnavailableException(e);
         }
+    }
+
+    private Map<String, Long> getAggregation(String key, SearchResponse response) {
+        MultiBucketsAggregation terms = response.getAggregations().get(key);
+        return terms.getBuckets().stream().collect(Collectors.toMap(Bucket::getKeyAsString, Bucket::getDocCount));
+    }
+
+    private Map<String, Long> getRangeAggregation(SearchResponse response) {
+        MultiBucketsAggregation terms = response.getAggregations().get("year");
+        return terms.getBuckets().stream()
+                .collect(Collectors.toMap(
+                        bucket -> bucket.getKeyAsString()
+                                + " - " + Double.toString(Double.parseDouble(bucket.getKeyAsString()) + Agregations.YEAR_RANGE),
+                        Bucket::getDocCount));
     }
 
     @SuppressWarnings("unchecked")

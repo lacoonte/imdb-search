@@ -5,7 +5,7 @@
                 "type": "long"
             },
             "genres": {
-                "type": "text"
+                "type": "keyword"
             },
             "isAdult": {
                 "type": "boolean"
@@ -24,7 +24,7 @@
                 "type": "long"
             },
             "type": {
-                "type": "text"
+                "type": "keyword"
             }
         }
     },
