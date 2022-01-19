@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import co.empathy.p01.app.index.IndexAlreadyExistsException;
@@ -146,7 +147,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
+						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
+								westernShowId)));
 
 		// Now test the filter, only the drama movie from 2003 (a really good one) and a
 		// short from 1916 should appear.
@@ -170,10 +172,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
+						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
+								westernShowId)));
 
 		// Now test the filter, only the scifi and the romance movie should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("genres", "Romance", "Sci-Fi"))
+		mvc.perform(
+				MockMvcRequestBuilders.get("/search").param("query", "The Return").param("genres", "Romance", "Sci-Fi"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -193,7 +197,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
+						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
+								westernShowId)));
 
 		// Now test the filter, only the short should appear
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "short"))
@@ -216,10 +221,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
+						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
+								westernShowId)));
 
 		// Now test the filter, only the short and tv episode should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "short", "tvEpisode"))
+		mvc.perform(
+				MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "short", "tvEpisode"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -239,10 +246,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId, westernShowId)));
+						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
+								westernShowId)));
 
 		// Now test the filter, only the romance movie should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "movie").param("genres", "Romance"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "movie")
+				.param("genres", "Romance"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -268,7 +277,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
 
 		// Now only the movies from 1960 to 2021 (both included) should appear
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1960/2021"))
@@ -291,10 +301,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
 
 		// Now only from 1916 to 1960 (both included) and from 2021 should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916/1960", "2021/2022"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916/1960",
+				"2021/2022"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -314,7 +326,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
 
 		// Now only 1916 should appear
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916"))
@@ -337,10 +350,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id, showNoYearId)));
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
 
 		// Now only 1916 should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916").param("years", "2003/2021"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916")
+				.param("years", "2003/2021"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
@@ -354,16 +369,66 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 
-	// For now I think that it's better to build requests in a more verbose way
-	// because it's clearer if someone else reads the test code.
-	// private static MockHttpServletRequestBuilder buildSearchRequest(String query,
-	// List<String> genres,
-	// List<String> types) {
-	// var rq = MockMvcRequestBuilders.get("/search");
-	// if(query!=null) rq = rq.param("query", query);
-	// if(genres!=null) {
+	@Test
+	void searchDateRangeAggregation() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
 
-	// }
-	// return rq;
-	// }
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['1910 - 1920']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['1960 - 1970']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['2000 - 2010']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['2020 - 2030']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
+	}
+
+	@Test
+	void searchGenresAggregation() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Western").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Drama").value(2))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Short").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Romance").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres['Sci-Fi']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
+	}
+
+	@Test
+	void searchTypesAggregation() throws Exception {
+		// First test that all four appear with no filter.
+		var short1916Id = "tt0221515";
+		var show1960Id = "tt0526635";
+		var movie2003Id = "tt0376968";
+		var movie2021Id = "tt14360612";
+		var showNoYearId = "tt14549854";
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.short").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.tvEpisode").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.movie").value(3))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
+								showNoYearId)));
+	}
 }

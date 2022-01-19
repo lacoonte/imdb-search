@@ -55,7 +55,7 @@ public class SearchServiceImpl implements SearchService {
             var typeAgg = getAggregation("type", response);
             var rangesAgg = getRangeAggregation(response);
             var result = new SearchServiceResult(hits.getTotalHits().value, titles,
-                    new Agregations(genresAgg, typeAgg, rangesAgg));
+                    new Aggregations(genresAgg, typeAgg, rangesAgg));
             return result;
         } catch (IOException e) {
             throw new ElasticUnavailableException(e);
@@ -71,8 +71,9 @@ public class SearchServiceImpl implements SearchService {
         MultiBucketsAggregation terms = response.getAggregations().get("year");
         return terms.getBuckets().stream()
                 .collect(Collectors.toMap(
-                        bucket -> bucket.getKeyAsString()
-                                + " - " + Double.toString(Double.parseDouble(bucket.getKeyAsString()) + Agregations.YEAR_RANGE),
+                        bucket -> Long.toString((long) ((double) bucket.getKey()))
+                                + " - "
+                                + Long.toString((long) ((double) bucket.getKey()) + Aggregations.YEAR_RANGE),
                         Bucket::getDocCount));
     }
 

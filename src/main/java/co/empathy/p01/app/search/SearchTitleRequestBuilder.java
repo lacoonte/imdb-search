@@ -9,7 +9,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -56,7 +55,7 @@ public class SearchTitleRequestBuilder {
         rqBuilder.aggregation(AggregationBuilders.terms("genres").field("genres"));
         rqBuilder.aggregation(AggregationBuilders.terms("type").field("type"));
         rqBuilder
-                .aggregation(AggregationBuilders.histogram("year").field("startYear").interval(Agregations.YEAR_RANGE));
+                .aggregation(AggregationBuilders.histogram("year").field("startYear").interval(Aggregations.YEAR_RANGE));
         searchRequest.source(rqBuilder);
         return searchRequest;
     }
