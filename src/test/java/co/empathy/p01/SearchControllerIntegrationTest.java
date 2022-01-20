@@ -2,8 +2,6 @@ package co.empathy.p01;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import co.empathy.p01.app.index.IndexAlreadyExistsException;
@@ -381,10 +378,10 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['1910 - 1920']").value(1))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['1960 - 1970']").value(1))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['2000 - 2010']").value(1))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.year['2020 - 2030']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['1910 - 1920']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['1960 - 1970']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2000 - 2010']").value(1))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2020 - 2030']").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
 						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
 								showNoYearId)));

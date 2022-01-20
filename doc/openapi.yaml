@@ -1,0 +1,156 @@
+openapi: 3.0.1
+info:
+  title: IMDB Search
+  description: Test project for learning ElasticSearch. It currently indexes searches
+    the IMDB database for media.
+  version: 0.1.0
+servers:
+- url: http://localhost:8080/
+paths:
+  /index:
+    post:
+      tags:
+      - index
+      summary: Creates index with a tsv located in the given path.
+      description: Provide a path for the IMDB database in .tsv format.
+      operationId: createIndex
+      parameters:
+      - name: path
+        in: query
+        description: File path for the IMDB database in .tsv
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content: {}
+  /search:
+    get:
+      tags:
+      - search
+      summary: Searches for a title
+      description: Provide the query alongside optional filters
+      operationId: search
+      parameters:
+      - name: query
+        in: query
+        description: The query you want to search for
+        required: true
+        schema:
+          type: string
+      - name: genres
+        in: query
+        description: Filter by the genres added. The title must belong to at least 1 genre.
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: types
+        in: query
+        description: Filter by the types added. The title must belong to 1 of the listed types.
+        explode: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: years
+        in: query
+        explode: false
+        description: Filter by single year o year ranges. The title startYear must be in a year range (inclusive) or belong to a single year. Ranges must be in the following format; 2000/2010.
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        400:
+          description: No query value or wrong year range format
+          content: {}
+components:
+  schemas:
+    SearchResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Title'
+        aggregations:
+          $ref: '#/components/schemas/Aggregations'
+      example:
+        total: 1
+        items:
+        - id: tt0145487
+          type: movie
+          primaryTitle: Spider-Man
+          originalTitle: Spider-Man
+          isAdult: false
+          startYear: 2002
+          runtimeMinutes: 121
+          genres:
+          - Action
+          - Adventure
+          - Sci-Fi
+        aggregations:
+        - genres:
+            Action: 1
+            Adventure: 1
+            Sci-fi: 1
+        - types:
+            movie: 1
+        - years:
+            2000-2020: 1
+    Aggregations:
+      type: object
+      properties:
+        genres:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        types:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+        years:
+          type: object
+          additionalProperties:
+            type: integer
+            format: int64
+    Title:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        primaryTitle:
+          type: string
+        originalTitle:
+          type: string
+        isAdult:
+          type: boolean
+        startYear:
+          type: integer
+          format: int32
+        endYear:
+          type: integer
+          format: int32
+        runtimeMinutes:
+          type: integer
+          format: int32
+        genres:
+          type: array
+          items:
+            type: string
