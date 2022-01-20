@@ -8,7 +8,10 @@ public interface SearchService {
     
     /**
      * Searches for the query.
-     * @param query
+     * @param query The query you want to look for.
+     * @param genres The added genres filters, if any.
+     * @param types The added types filters, if any.
+     * @param years The added years filters, if any. Can be a range or single year.
      * @return The search result.
      * @throws ElasticUnavailableException If we could not reach any elastic node.
      * @throws EmptyQueryException If query is empty.

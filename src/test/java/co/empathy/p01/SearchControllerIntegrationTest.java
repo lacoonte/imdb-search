@@ -20,6 +20,12 @@ import co.empathy.p01.app.index.TitlesFileNotExistsExcetion;
 @SpringBootTest
 @AutoConfigureMockMvc
 class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
+	private final static String RETURN_MOVIE_NAME = "The Return";
+	private final static String RETURN_SHORT_1916_DRAMASHORT_ID = "tt0221515";
+	private final static String RETURN_TV_1960_WESTERN_ID = "tt0526635";
+	private final static String RETURN_MOVIE_2003_DRAMA_ID = "tt0376968";
+	private final static String RETURN_MOVIE_2021_SCIFI_ID = "tt14360612";
+	private final static String RETURN_MOVIE_ROMANCE_ID = "tt14549854";
 
 	@Autowired
 	private MockMvc mvc;
@@ -134,125 +140,74 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	@Test
 	void searchWithOneGenreFilter() throws Exception {
 		// First test that all four appear with no filter.
-		var dramaShortId = "tt0221515";
-		var dramaMovieId = "tt0376968";
-		var romanceMovieId = "tt14549854";
-		var sciFiMovieId = "tt14360612";
-		var westernShowId = "tt0526635";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
-								westernShowId)));
+		checkTheReturnNoFilter();
 
 		// Now test the filter, only the drama movie from 2003 (a really good one) and a
 		// short from 1916 should appear.
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("genres", "Drama"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "Drama"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
+								RETURN_MOVIE_2003_DRAMA_ID)));
 	}
 
 	@Test
 	void searchWithMultipleGenreFilter() throws Exception {
 		// First test that all four appear with no filter.
-		var dramaShortId = "tt0221515";
-		var dramaMovieId = "tt0376968";
-		var romanceMovieId = "tt14549854";
-		var sciFiMovieId = "tt14360612";
-		var westernShowId = "tt0526635";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
-								westernShowId)));
+		checkTheReturnNoFilter();
 
 		// Now test the filter, only the scifi and the romance movie should appear
 		mvc.perform(
-				MockMvcRequestBuilders.get("/search").param("query", "The Return").param("genres", "Romance", "Sci-Fi"))
+				MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "Romance",
+						"Sci-Fi"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(romanceMovieId, sciFiMovieId)));
+						.value(Matchers.containsInAnyOrder(RETURN_MOVIE_ROMANCE_ID, RETURN_MOVIE_2021_SCIFI_ID)));
 	}
 
 	@Test
 	void searchWithOneTypeFilter() throws Exception {
 		// First test that all four appear with no filter.
-		var dramaShortId = "tt0221515";
-		var dramaMovieId = "tt0376968";
-		var romanceMovieId = "tt14549854";
-		var sciFiMovieId = "tt14360612";
-		var westernShowId = "tt0526635";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
-								westernShowId)));
+		checkTheReturnNoFilter();
 
 		// Now test the filter, only the short should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "short"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "short"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
 	@Test
 	void searchWithMultipleTypeFilter() throws Exception {
 		// First test that all four appear with no filter.
-		var dramaShortId = "tt0221515";
-		var dramaMovieId = "tt0376968";
-		var romanceMovieId = "tt14549854";
-		var sciFiMovieId = "tt14360612";
-		var westernShowId = "tt0526635";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
-								westernShowId)));
+		checkTheReturnNoFilter();
 
 		// Now test the filter, only the short and tv episode should appear
 		mvc.perform(
-				MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "short", "tvEpisode"))
+				MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "short",
+						"tvEpisode"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(westernShowId, dramaShortId)));
+						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID,
+								RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
 	@Test
 	void searchWithGenreAndTypeFilter() throws Exception {
 		// First test that all four appear with no filter.
-		var dramaShortId = "tt0221515";
-		var dramaMovieId = "tt0376968";
-		var romanceMovieId = "tt14549854";
-		var sciFiMovieId = "tt14360612";
-		var westernShowId = "tt0526635";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(dramaShortId, dramaMovieId, romanceMovieId, sciFiMovieId,
-								westernShowId)));
+		checkTheReturnNoFilter();
 
 		// Now test the filter, only the romance movie should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("types", "movie")
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "movie")
 				.param("genres", "Romance"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(romanceMovieId)));
+						.value(Matchers.containsInAnyOrder(RETURN_MOVIE_ROMANCE_ID)));
 	}
 
 	@Test
@@ -264,118 +219,70 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	@Test
 	void searchWithSingleDateRange() throws Exception {
 		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+		checkTheReturnNoFilter();
 
 		// Now only the movies from 1960 to 2021 (both included) should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1960/2021"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1960/2021"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(show1960Id, movie2003Id, movie2021Id)));
+						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID, RETURN_MOVIE_2003_DRAMA_ID,
+								RETURN_MOVIE_2021_SCIFI_ID)));
 	}
 
 	@Test
 	void searchWithMultipleDateRanges() throws Exception {
 		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+		checkTheReturnNoFilter();
 
 		// Now only from 1916 to 1960 (both included) and from 2021 should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916/1960",
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1916/1960",
 				"2021/2022"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(show1960Id, movie2021Id, short1916Id)));
+						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID, RETURN_MOVIE_2021_SCIFI_ID,
+								RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
 	@Test
 	void searchWithSingleDateInDateRangesParam() throws Exception {
 		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+		checkTheReturnNoFilter();
 
 		// Now only 1916 should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1916"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
 	@Test
 	void searchWithSingleDateAndRangeParam() throws Exception {
 		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
-				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+		checkTheReturnNoFilter();
 
 		// Now only 1916 should appear
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916")
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1916")
 				.param("years", "2003/2021"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, movie2003Id, movie2021Id)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_MOVIE_2003_DRAMA_ID,
+								RETURN_MOVIE_2021_SCIFI_ID)));
 	}
 
 	@Test
 	void searchWithDashedDateRange() throws Exception {
 		// If years are separated by a dash, it should throw BadRequest.
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return").param("years", "1916-1920"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1916-1920"))
 				.andExpect(MockMvcResultMatchers.status().isBadRequest());
 	}
 
 	@Test
 	void searchDateRangeAggregation() throws Exception {
-		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['1910 - 1920']").value(1))
@@ -383,20 +290,14 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2000 - 2010']").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2020 - 2030']").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
+								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
+								RETURN_MOVIE_ROMANCE_ID)));
 	}
 
 	@Test
 	void searchGenresAggregation() throws Exception {
-		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Western").value(1))
@@ -405,27 +306,32 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Romance").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres['Sci-Fi']").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
+								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
+								RETURN_MOVIE_ROMANCE_ID)));
 	}
 
 	@Test
 	void searchTypesAggregation() throws Exception {
-		// First test that all four appear with no filter.
-		var short1916Id = "tt0221515";
-		var show1960Id = "tt0526635";
-		var movie2003Id = "tt0376968";
-		var movie2021Id = "tt14360612";
-		var showNoYearId = "tt14549854";
-
-		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "The Return"))
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.short").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.tvEpisode").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.movie").value(3))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
-						.value(Matchers.containsInAnyOrder(short1916Id, show1960Id, movie2003Id, movie2021Id,
-								showNoYearId)));
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
+								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
+								RETURN_MOVIE_ROMANCE_ID)));
+	}
+
+	private void checkTheReturnNoFilter() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_MOVIE_2003_DRAMA_ID,
+								RETURN_MOVIE_ROMANCE_ID, RETURN_MOVIE_2021_SCIFI_ID,
+								RETURN_TV_1960_WESTERN_ID)));
 	}
 }
