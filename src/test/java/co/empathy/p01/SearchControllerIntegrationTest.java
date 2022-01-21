@@ -281,6 +281,20 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	}
 
 	@Test
+	void searchWithSeparatedLettersInDateRange() throws Exception {
+		// If years are separated by a dash, it should throw BadRequest.
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "asdfa/sdf"))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
+	void searchWithLettersInDateRange() throws Exception {
+		// If years are separated by a dash, it should throw BadRequest.
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "asdfasdf"))
+				.andExpect(MockMvcResultMatchers.status().isBadRequest());
+	}
+
+	@Test
 	void searchDateRangeAggregation() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
 				.andExpect(MockMvcResultMatchers.status().isOk())
