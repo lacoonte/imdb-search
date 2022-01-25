@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import co.empathy.p01.app.index.IndexAlreadyExistsException;
 import co.empathy.p01.app.index.IndexFailedException;
 import co.empathy.p01.app.index.TitleIndexService;
-import co.empathy.p01.app.index.TitlesFileNotExistsExcetion;
+import co.empathy.p01.app.index.FileNotExistsExcetion;
 
 @RestController
 public class IndexController {
@@ -19,9 +19,13 @@ public class IndexController {
     private TitleIndexService service;
 
     @PostMapping("/index")
-    public ResponseEntity<?> main(@RequestParam String path) throws IndexAlreadyExistsException, IndexFailedException, TitlesFileNotExistsExcetion {
+    public ResponseEntity<?> main(@RequestParam String path, @RequestParam(required = false) String ratingsPath)
+            throws IndexAlreadyExistsException, IndexFailedException, FileNotExistsExcetion {
         try {
-            service.indexTitlesFromTabFile(path);
+            if (ratingsPath == null)
+                service.indexTitlesFromTabFile(path);
+            else
+                service.indexTitlesWithRatingsFromTabFiles(path, ratingsPath);
             return ResponseEntity.ok().build();
         } catch (IOException e) {
             return ResponseEntity.badRequest().body(e.toString());

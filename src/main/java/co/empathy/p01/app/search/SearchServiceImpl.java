@@ -81,7 +81,8 @@ public class SearchServiceImpl implements SearchService {
     private Title mapTitle(String id, Map<String, Object> map) {
         return new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
                 (String) map.get("originalTitle"), (Boolean) map.get("isAdult"), (Integer) map.get("startYear"),
-                (Integer) map.get("endYear"), (Integer) map.get("runtimeMinutes"), (List<String>) map.get("genres"));
+                (Integer) map.get("endYear"), (Integer) map.get("runtimeMinutes"), (List<String>) map.get("genres"),
+                (Float) map.get("averageRating"), (Long) map.get("numVotes"));
     }
 
     @Override

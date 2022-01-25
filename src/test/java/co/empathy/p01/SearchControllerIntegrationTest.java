@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import co.empathy.p01.app.index.IndexAlreadyExistsException;
 import co.empathy.p01.app.index.IndexFailedException;
 import co.empathy.p01.app.index.TitleIndexService;
-import co.empathy.p01.app.index.TitlesFileNotExistsExcetion;
+import co.empathy.p01.app.index.FileNotExistsExcetion;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,7 +32,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 
 	@BeforeAll
 	static void setUp(@Autowired TitleIndexService service)
-			throws IOException, IndexAlreadyExistsException, IndexFailedException, TitlesFileNotExistsExcetion {
+			throws IOException, IndexAlreadyExistsException, IndexFailedException, FileNotExistsExcetion {
 		CONTAINER.start();
 		ClassLoader classLoader = SearchControllerIntegrationTest.class.getClassLoader();
 		File file = new File(classLoader.getResource("search_integration_test.tsv").getFile());

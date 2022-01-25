@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import co.empathy.p01.model.Title;
 
+
 @Service
 public class TabsTitleParser implements TitleParser {
     private final static String NULL_TOKEN = "\\N";
@@ -22,7 +23,7 @@ public class TabsTitleParser implements TitleParser {
         var endYear = getIntOrNull(values[6]);
         var runtimeMinutes = getIntOrNull(values[7]);
         var genres = getGenresList(values[8]);
-        return new Title(id, type, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres);
+        return new Title(id, type, primaryTitle, originalTitle, isAdult, startYear, endYear, runtimeMinutes, genres, null, null);
     }
 
     private String getStringOrNull(String s) {

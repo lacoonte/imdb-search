@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import co.empathy.p01.app.ElasticUnavailableException;
 import co.empathy.p01.app.index.IndexAlreadyExistsException;
 import co.empathy.p01.app.index.IndexFailedException;
-import co.empathy.p01.app.index.TitlesFileNotExistsExcetion;
+import co.empathy.p01.app.index.FileNotExistsExcetion;
 import co.empathy.p01.app.search.EmptyQueryException;
 
 @ControllerAdvice
@@ -43,9 +43,9 @@ public class ControllerAdvisor {
     }
 
     @ResponseBody
-    @ExceptionHandler(TitlesFileNotExistsExcetion.class)
+    @ExceptionHandler(FileNotExistsExcetion.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String titlesFilesNotExistsHandler(TitlesFileNotExistsExcetion ex) {
+    String titlesFilesNotExistsHandler(FileNotExistsExcetion ex) {
         return ex.getMessage();
     }
 }
