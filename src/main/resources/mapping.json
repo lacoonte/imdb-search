@@ -15,6 +15,11 @@
             },
             "primaryTitle": {
                 "type": "text",
+                "fields": {
+                    "raw": {
+                        "type": "keyword"
+                    }
+                },
                 "analyzer": "custom_analyzer"
             },
             "runtimeMinutes": {

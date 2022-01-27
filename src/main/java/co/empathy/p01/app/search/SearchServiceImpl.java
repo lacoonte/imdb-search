@@ -3,6 +3,7 @@ package co.empathy.p01.app.search;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -82,7 +83,8 @@ public class SearchServiceImpl implements SearchService {
         return new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
                 (String) map.get("originalTitle"), (Boolean) map.get("isAdult"), (Integer) map.get("startYear"),
                 (Integer) map.get("endYear"), (Integer) map.get("runtimeMinutes"), (List<String>) map.get("genres"),
-                (Float) map.get("averageRating"), (Long) map.get("numVotes"));
+                Optional.ofNullable(map.get("numVotes")).map(val -> (Double) val).orElse(0D),
+                Optional.ofNullable(map.get("numVotes")).map(val -> Long.valueOf((Integer) val)).orElse(0L));
     }
 
     @Override

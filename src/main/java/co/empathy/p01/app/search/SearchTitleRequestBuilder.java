@@ -5,10 +5,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
+import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.functionscore.FieldValueFactorFunctionBuilder;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder;
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders;
+import org.elasticsearch.index.query.functionscore.FunctionScoreQueryBuilder.FilterFunctionBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 
@@ -55,25 +61,37 @@ public class SearchTitleRequestBuilder {
         rqBuilder.aggregation(AggregationBuilders.terms("genres").field("genres"));
         rqBuilder.aggregation(AggregationBuilders.terms("type").field("type"));
         rqBuilder
-                .aggregation(AggregationBuilders.histogram("year").field("startYear").interval(Aggregations.YEAR_RANGE));
+                .aggregation(
+                        AggregationBuilders.histogram("year").field("startYear").interval(Aggregations.YEAR_RANGE));
         searchRequest.source(rqBuilder);
         return searchRequest;
     }
 
     private QueryBuilder buildQueryBuilder() {
+        var result = new BoolQueryBuilder();
+        var termQuery = QueryBuilders.termQuery("primaryTitle.raw", titleName).boost(10).caseInsensitive(true);
+        var typeQuery = QueryBuilders.termQuery("type", "movie").boost(5);
         var titleQuery = new MatchQueryBuilder("primaryTitle", titleName);
+        result.should(termQuery).should(typeQuery).must(titleQuery);
         var filtersN = queryBuilders.size();
         switch (filtersN) {
             case 0:
-                return titleQuery;
+                return buildMainQuery(result);
             case 1:
-                return queryBuilders.get(0).must(titleQuery);
+                return buildMainQuery(result.must(queryBuilders.get(0)));
             default:
-                var result = new BoolQueryBuilder();
-                result.must(titleQuery);
                 queryBuilders.forEach(qB -> result.must(qB));
-                return result;
+                return buildMainQuery(result);
         }
+    }
+
+    private FunctionScoreQueryBuilder buildMainQuery(BoolQueryBuilder boolQueryBuilder) {
+        var nVotes = new FieldValueFactorFunctionBuilder("numVotes");
+        nVotes.missing(0.1).modifier(Modifier.LOG1P);
+        var gauss = ScoreFunctionBuilders.gaussDecayFunction("startYear", "2022", "1");
+        var result = new FunctionScoreQueryBuilder(boolQueryBuilder, new FilterFunctionBuilder[]{new FunctionScoreQueryBuilder.FilterFunctionBuilder(gauss),new FunctionScoreQueryBuilder.FilterFunctionBuilder(nVotes)});
+        result.scoreMode(ScoreMode.SUM);
+        return result;
     }
 
     private BoolQueryBuilder buildBoolQueryBuilder() {
