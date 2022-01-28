@@ -153,6 +153,28 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	}
 
 	@Test
+	void searchWithOneGenreFilterAndIgnoreCase() throws Exception {
+		// First test that all four appear with no filter.
+		checkTheReturnNoFilter();
+
+		// Now test the filter, only the drama movie from 2003 (a really good one) and a
+		// short from 1916 should appear.
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "drama"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
+								RETURN_MOVIE_2003_DRAMA_ID)));
+
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "DRAMA"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
+								RETURN_MOVIE_2003_DRAMA_ID)));
+	}
+
+	@Test
 	void searchWithMultipleGenreFilter() throws Exception {
 		// First test that all four appear with no filter.
 		checkTheReturnNoFilter();
@@ -174,6 +196,28 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 
 		// Now test the filter, only the short should appear
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "short"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
+	}
+
+	@Test
+	void searchWithOneTypeFilterAndIgnoreCase() throws Exception {
+		// First test that all four appear with no filter.
+		checkTheReturnNoFilter();
+
+		// Now test the filter, only the short should appear ("short" is the exact type name)
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "SHORT"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
+
+		// Now test the filter, only the short should appear ("short" is the exact type name)
+
+		
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "Short"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")

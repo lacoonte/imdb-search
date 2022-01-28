@@ -32,7 +32,7 @@ public class SearchTitleRequestBuilder {
 
     public void addGenresFilter(List<String> genres) {
         var genresQuery = buildBoolQueryBuilder();
-        genres.forEach(genre -> genresQuery.should(QueryBuilders.matchQuery("genres", genre)));
+        genres.forEach(genre -> genresQuery.should(QueryBuilders.termQuery("genres", genre).caseInsensitive(true)));
         queryBuilders.add(genresQuery);
     }
 
@@ -42,14 +42,14 @@ public class SearchTitleRequestBuilder {
         areRanges.get(true).stream()
                 .map(range -> QueryBuilders.rangeQuery("startYear").gte(range.start()).lte(range.end()))
                 .forEach(qB -> rangesQuery.should(qB));
-        areRanges.get(false).stream().map(year -> QueryBuilders.matchQuery("startYear", year.start()))
+        areRanges.get(false).stream().map(year -> QueryBuilders.termQuery("startYear", year.start()))
                 .forEach(qB -> rangesQuery.should(qB));
         queryBuilders.add(rangesQuery);
     }
 
     public void addTypesFilter(List<String> types) {
         var typesQuery = buildBoolQueryBuilder();
-        types.forEach(type -> typesQuery.should(QueryBuilders.matchQuery("type", type)));
+        types.forEach(type -> typesQuery.should(QueryBuilders.termQuery("type", type).caseInsensitive(true)));
         queryBuilders.add(typesQuery);
     }
 
