@@ -8,7 +8,6 @@ import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction.Modifier;
 import org.elasticsearch.common.lucene.search.function.FunctionScoreQuery.ScoreMode;
 import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.functionscore.FieldValueFactorFunctionBuilder;
@@ -71,7 +70,7 @@ public class SearchTitleRequestBuilder {
         var result = new BoolQueryBuilder();
         var termQuery = QueryBuilders.termQuery("primaryTitle.raw", titleName).boost(10).caseInsensitive(true);
         var typeQuery = QueryBuilders.termQuery("type", "movie").boost(5);
-        var titleQuery = new MatchQueryBuilder("primaryTitle", titleName);
+        var titleQuery = QueryBuilders.matchPhraseQuery("primaryTitle", titleName);
         result.should(termQuery).should(typeQuery).must(titleQuery);
         var filtersN = queryBuilders.size();
         switch (filtersN) {

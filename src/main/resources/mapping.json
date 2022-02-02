@@ -18,6 +18,10 @@
                 "fields": {
                     "raw": {
                         "type": "keyword"
+                    },
+                    "trigram": {
+                        "type": "text",
+                        "analyzer": "trigram"
                     }
                 },
                 "analyzer": "custom_analyzer"
@@ -42,6 +46,14 @@
     "settings": {
         "analysis": {
             "analyzer": {
+                "trigram": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "shingle"
+                    ]
+                },
                 "custom_analyzer": {
                     "type": "custom",
                     "tokenizer": "whitespace",
@@ -82,6 +94,11 @@
                         "xiv, 14",
                         "xv, 15"
                     ]
+                },
+                "shingle": {
+                    "type": "shingle",
+                    "min_shingle_size": 2,
+                    "max_shingle_size": 3
                 }
             }
         }

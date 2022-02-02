@@ -91,6 +91,30 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	}
 
 	@Test
+	void suggest() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "the retxrn"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.suggestions[0].suggested").value("the return"));
+	}
+
+	@Test
+	void suggest2Perm() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "the retxnn"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.suggestions[0].suggested").value("the return"));
+	}
+
+	@Test
+	void suggest3Perm() throws Exception {
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "the relxnn"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.suggestions.length()").value(0));
+	}
+
+	@Test
 	void ignoreCaps() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "jukebox"))
 				.andExpect(MockMvcResultMatchers.status().isOk())

@@ -1,18 +1,30 @@
 package co.empathy.p01.app.search;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
+import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation.Bucket;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.SuggestionBuilder;
+import org.elasticsearch.search.suggest.phrase.PhraseSuggestion;
+import org.elasticsearch.search.suggest.phrase.PhraseSuggestionBuilder;
+import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,14 +62,35 @@ public class SearchServiceImpl implements SearchService {
         try {
             var response = cli.search(rq, RequestOptions.DEFAULT);
             var hits = response.getHits();
-            var titles = StreamSupport.stream(hits.spliterator(), true)
-                    .map(hit -> mapTitle(hit.getId(), hit.getSourceAsMap())).toList();
-            var genresAgg = getAggregation("genres", response);
-            var typeAgg = getAggregation("type", response);
-            var rangesAgg = getRangeAggregation(response);
-            var result = new SearchServiceResult(hits.getTotalHits().value, titles,
-                    new Aggregations(genresAgg, typeAgg, rangesAgg));
-            return result;
+            var hitsN = hits.getTotalHits().value;
+            if (hitsN > 0L) {
+                var titles = StreamSupport.stream(hits.spliterator(), true)
+                        .map(hit -> mapTitle(hit.getId(), hit.getSourceAsMap())).toList();
+                var genresAgg = getAggregation("genres", response);
+                var typeAgg = getAggregation("type", response);
+                var rangesAgg = getRangeAggregation(response);
+                var result = new SearchServiceResult(hitsN, titles,
+                        new Aggregations(genresAgg, typeAgg, rangesAgg), null);
+                return result;
+            } else {
+                SuggestionBuilder<PhraseSuggestionBuilder> suggestRq = SuggestBuilders
+                        .phraseSuggestion("primaryTitle.trigram").text(query).gramSize(3);
+                var rqBuilder = new SearchSourceBuilder();
+                var suggestSearchRq = new SearchRequest();
+                var suggestBuilder = new SuggestBuilder();
+                suggestBuilder.addSuggestion("spellcheck", suggestRq);
+                rqBuilder.suggest(suggestBuilder);
+                suggestSearchRq.source(rqBuilder);
+                System.out.println(suggestSearchRq.source().toString());
+                var suggestResponse = cli.search(suggestSearchRq, RequestOptions.DEFAULT);
+                PhraseSuggestion suggest = suggestResponse.getSuggest().getSuggestion("spellcheck");
+                var suggestions = suggest.getEntries().stream()
+                        .flatMap(entry -> entry.getOptions().stream())
+                        .map(option -> new TitleSuggestion(option.getScore(), option.getText().string()));
+                var result = new SearchServiceResult(hitsN, Collections.emptyList(), null, suggestions.toList());
+                return result;
+            }
+
         } catch (IOException e) {
             throw new ElasticUnavailableException(e);
         }
@@ -83,7 +116,7 @@ public class SearchServiceImpl implements SearchService {
         return new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
                 (String) map.get("originalTitle"), (Boolean) map.get("isAdult"), (Integer) map.get("startYear"),
                 (Integer) map.get("endYear"), (Integer) map.get("runtimeMinutes"), (List<String>) map.get("genres"),
-                Optional.ofNullable(map.get("numVotes")).map(val -> (Double) val).orElse(0D),
+                Optional.ofNullable(map.get("averageRating")).map(val -> (Double) val).orElse(0D),
                 Optional.ofNullable(map.get("numVotes")).map(val -> Long.valueOf((Integer) val)).orElse(0L));
     }
 

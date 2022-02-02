@@ -4,8 +4,7 @@ import java.util.List;
 
 import co.empathy.p01.model.Title;
 
-public record SearchServiceResult(long total, List<Title> items
- , Aggregations aggregations
+public record SearchServiceResult(long total, List<Title> items, Aggregations aggregations, List<TitleSuggestion> suggestions
 ) {
     
 }
