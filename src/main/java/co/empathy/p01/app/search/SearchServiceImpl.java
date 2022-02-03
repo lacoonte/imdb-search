@@ -1,14 +1,11 @@
 package co.empathy.p01.app.search;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import org.elasticsearch.action.admin.cluster.settings.ClusterGetSettingsRequest;
@@ -24,7 +21,6 @@ import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
 import org.elasticsearch.search.suggest.phrase.PhraseSuggestion;
 import org.elasticsearch.search.suggest.phrase.PhraseSuggestionBuilder;
-import org.elasticsearch.search.suggest.term.TermSuggestion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,8 +65,7 @@ public class SearchServiceImpl implements SearchService {
                 var genresAgg = getAggregation("genres", response);
                 var typeAgg = getAggregation("type", response);
                 var rangesAgg = getRangeAggregation(response);
-                var result = new SearchServiceResult(hitsN, titles,
-                        new Aggregations(genresAgg, typeAgg, rangesAgg), null);
+                var result = new SearchServiceResult(hitsN, titles, new Aggregations(genresAgg, typeAgg, rangesAgg));
                 return result;
             } else {
                 SuggestionBuilder<PhraseSuggestionBuilder> suggestRq = SuggestBuilders
@@ -87,7 +82,7 @@ public class SearchServiceImpl implements SearchService {
                 var suggestions = suggest.getEntries().stream()
                         .flatMap(entry -> entry.getOptions().stream())
                         .map(option -> new TitleSuggestion(option.getScore(), option.getText().string()));
-                var result = new SearchServiceResult(hitsN, Collections.emptyList(), null, suggestions.toList());
+                var result = new SearchServiceResult(suggestions.toList());
                 return result;
             }
 
