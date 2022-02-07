@@ -22,9 +22,12 @@ public class SearchController {
 
     @GetMapping("/search")
     public SearchServiceResult main(@RequestParam String query, @RequestParam(defaultValue = "") List<String> genres,
-            @RequestParam(defaultValue = "") List<String> types, @RequestParam(defaultValue = "") List<YearFilter> years)
+            @RequestParam(defaultValue = "") List<String> types,
+            @RequestParam(defaultValue = "") List<YearFilter> years,
+            @RequestParam(defaultValue = "0") int start,
+            @RequestParam(defaultValue = "10") int rows)
             throws ElasticUnavailableException, IOException, EmptyQueryException {
-        var result = service.search(query, genres, types, years);
+        var result = service.search(query, genres, types, years, start, rows);
         return result;
     }
 }

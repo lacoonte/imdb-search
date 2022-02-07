@@ -20,13 +20,16 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 public class SearchTitleRequestBuilder {
     private final String titleName;
     private final String indexName;
-
+    private final int nRows;
+    private final int start;
     private List<BoolQueryBuilder> queryBuilders;
 
-    public SearchTitleRequestBuilder(String titleName, String indexName) {
+    public SearchTitleRequestBuilder(String titleName, String indexName, int start, int nRows) {
         queryBuilders = new ArrayList<>();
         this.indexName = indexName;
         this.titleName = titleName;
+        this.start = start;
+        this.nRows = nRows;
     }
 
     public void addGenresFilter(List<String> genres) {
@@ -56,6 +59,10 @@ public class SearchTitleRequestBuilder {
         var searchRequest = new SearchRequest(indexName);
         var q = buildQueryBuilder();
         var rqBuilder = new SearchSourceBuilder();
+        
+        rqBuilder.from(start);
+        rqBuilder.size(nRows);
+        
         rqBuilder.query(q);
         rqBuilder.aggregation(AggregationBuilders.terms("genres").field("genres"));
         rqBuilder.aggregation(AggregationBuilders.terms("type").field("type"));

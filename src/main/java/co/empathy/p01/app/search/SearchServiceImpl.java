@@ -41,12 +41,12 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public SearchServiceResult search(String query, List<String> genres, List<String> types, List<YearFilter> years)
+    public SearchServiceResult search(String query, List<String> genres, List<String> types, List<YearFilter> years, int start, int nRows)
             throws ElasticUnavailableException, EmptyQueryException {
         if (query.isEmpty())
             throw new EmptyQueryException();
 
-        var searchRqBuilder = new SearchTitleRequestBuilder(query, config.indexName());
+        var searchRqBuilder = new SearchTitleRequestBuilder(query, config.indexName(), start, nRows);
         if (!genres.isEmpty())
             searchRqBuilder.addGenresFilter(genres);
         if (!types.isEmpty())
