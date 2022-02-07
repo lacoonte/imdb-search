@@ -40,6 +40,20 @@ paths:
           required: true
           schema:
             type: string
+        - name: start
+          in: query
+          description: The start position for the results you want to retrieve.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: rows
+          in: query
+          description: The number of results you want to retrieve.
+          required: false
+          schema:
+            type: integer
+            format: int32
         - name: genres
           in: query
           description: Filter by the genres added. The title must belong to at least 1 genre.

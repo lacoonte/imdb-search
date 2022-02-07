@@ -68,7 +68,7 @@ public class SearchTitleRequestBuilder {
         rqBuilder.aggregation(AggregationBuilders.terms("type").field("type"));
         rqBuilder
                 .aggregation(
-                        AggregationBuilders.histogram("year").field("startYear").interval(Aggregations.YEAR_RANGE));
+                        AggregationBuilders.histogram("year").field("startYear").interval(Aggregations.YEAR_RANGE).missing(0).minDocCount(1L));
         searchRequest.source(rqBuilder);
         return searchRequest;
     }
