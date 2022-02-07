@@ -3,9 +3,8 @@ package co.empathy.p01.app.search;
 import java.util.List;
 import java.util.Objects;
 
-import co.empathy.p01.model.Title;
 
-public record SearchServiceResult(long total, List<Title> items, Aggregations aggregations,
+public record SearchServiceResult(long total, List<TitleResult> items, Aggregations aggregations,
         List<TitleSuggestion> suggestions) {
     public SearchServiceResult {
         Objects.requireNonNull(items);
@@ -13,7 +12,7 @@ public record SearchServiceResult(long total, List<Title> items, Aggregations ag
         Objects.requireNonNull(suggestions);
     }
 
-    public SearchServiceResult(long total, List<Title> items, Aggregations aggregations) {
+    public SearchServiceResult(long total, List<TitleResult> items, Aggregations aggregations) {
         this(total, items, aggregations, List.of());
     }
 

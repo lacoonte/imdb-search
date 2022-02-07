@@ -90,17 +90,19 @@ paths:
                   value:
                     total: 1
                     items:
-                    - id: tt0145487
-                      type: movie
-                      primaryTitle: Spider-Man
-                      originalTitle: Spider-Man
-                      isAdult: false
-                      startYear: 2002
-                      runtimeMinutes: 121
-                      genres:
-                        - Action
-                        - Adventure
-                        - Sci-Fi
+                    - title:
+                        id: tt0145487
+                        type: movie
+                        primaryTitle: Spider-Man
+                        originalTitle: Spider-Man
+                        isAdult: false
+                        startYear: 2002
+                        runtimeMinutes: 121
+                        genres:
+                          - Action
+                          - Adventure
+                          - Sci-Fi
+                      score: 1.2329412
                     aggregations:
                       - genres:
                           Action: 1
@@ -135,7 +137,7 @@ components:
         items:
           type: array
           items:
-            $ref: "#/components/schemas/Title"
+            $ref: "#/components/schemas/TitleResult"
         aggregations:
           $ref: "#/components/schemas/Aggregations"
         suggestions:
@@ -186,6 +188,14 @@ components:
           type: array
           items:
             type: string
+    TitleResult:
+      type: object
+      properties:
+        title:
+          $ref: "#/components/schemas/Title"
+        score:
+          type: number
+          format: double
     Suggestion:
       type: object
       properties:

@@ -60,7 +60,7 @@ public class SearchServiceImpl implements SearchService {
             var hitsN = hits.getTotalHits().value;
             if (hitsN > 0L) {
                 var titles = StreamSupport.stream(hits.spliterator(), true)
-                        .map(hit -> mapTitle(hit.getId(), hit.getSourceAsMap())).toList();
+                        .map(hit -> mapTitle(hit.getId(), hit.getSourceAsMap(), hit.getScore())).toList();
                 var genresAgg = getAggregation("genres", response);
                 var typeAgg = getAggregation("type", response);
                 var rangesAgg = getRangeAggregation(response);
@@ -106,12 +106,12 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @SuppressWarnings("unchecked")
-    private Title mapTitle(String id, Map<String, Object> map) {
-        return new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
+    private TitleResult mapTitle(String id, Map<String, Object> map, float score) {
+        return new TitleResult(new Title(id, (String) map.get("type"), (String) map.get("primaryTitle"),
                 (String) map.get("originalTitle"), (Boolean) map.get("isAdult"), (Integer) map.get("startYear"),
                 (Integer) map.get("endYear"), (Integer) map.get("runtimeMinutes"), (List<String>) map.get("genres"),
                 Optional.ofNullable(map.get("averageRating")).map(val -> (Double) val).orElse(0D),
-                Optional.ofNullable(map.get("numVotes")).map(val -> Long.valueOf((Integer) val)).orElse(0L));
+                Optional.ofNullable(map.get("numVotes")).map(val -> Long.valueOf((Integer) val)).orElse(0L)), score);
     }
 
     @Override

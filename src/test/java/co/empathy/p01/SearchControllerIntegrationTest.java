@@ -45,8 +45,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Jukebox"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("Jukebox"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0077440"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("Jukebox"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0077440"));
 	}
 
 	@Test
@@ -55,12 +55,12 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Spiderman"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$..items[:2].id").value(resultMatcher));
+				.andExpect(MockMvcResultMatchers.jsonPath("$..items[:2].title.id").value(resultMatcher));
 
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Spider-man"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$..items[:2].id").value(resultMatcher));
+				.andExpect(MockMvcResultMatchers.jsonPath("$..items[:2].title.id").value(resultMatcher));
 	}
 
 	@Test
@@ -68,8 +68,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "5 for Vendetta"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("V for Vendetta"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0434409"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("V for Vendetta"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0434409"));
 	}
 
 	@Test
@@ -77,8 +77,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Rocky 5"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("Rocky V"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0100507"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("Rocky V"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0100507"));
 	}
 
 	@Test
@@ -86,8 +86,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "L'enfant temoin"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("L'enfant témoin"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0113495"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("L'enfant témoin"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0113495"));
 	}
 
 	@Test
@@ -119,8 +119,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "jukebox"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("Jukebox"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0077440"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("Jukebox"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0077440"));
 	}
 
 	@Test
@@ -137,8 +137,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Jukebox"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("Jukebox"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0077440"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("Jukebox"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0077440"));
 
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Jukebox").param("genres", "fakeGenre"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -152,8 +152,8 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Jukebox"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].primaryTitle").value("Jukebox"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].id").value("tt0077440"));
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.primaryTitle").value("Jukebox"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[0].title.id").value("tt0077440"));
 
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", "Jukebox").param("types", "fakeType"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
@@ -171,7 +171,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "Drama"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
 								RETURN_MOVIE_2003_DRAMA_ID)));
 	}
@@ -186,14 +186,14 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "drama"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
 								RETURN_MOVIE_2003_DRAMA_ID)));
 
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("genres", "DRAMA"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID,
 								RETURN_MOVIE_2003_DRAMA_ID)));
 	}
@@ -209,7 +209,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 						"Sci-Fi"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_MOVIE_ROMANCE_ID, RETURN_MOVIE_2021_SCIFI_ID)));
 	}
 
@@ -222,7 +222,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "short"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
@@ -235,7 +235,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "SHORT"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 
 		// Now test the filter, only the short should appear ("short" is the exact type name)
@@ -244,7 +244,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "Short"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
@@ -259,7 +259,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 						"tvEpisode"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID,
 								RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
@@ -274,7 +274,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.param("genres", "Romance"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_MOVIE_ROMANCE_ID)));
 	}
 
@@ -293,7 +293,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1960/2021"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID, RETURN_MOVIE_2003_DRAMA_ID,
 								RETURN_MOVIE_2021_SCIFI_ID)));
 	}
@@ -308,7 +308,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				"2021/2022"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_TV_1960_WESTERN_ID, RETURN_MOVIE_2021_SCIFI_ID,
 								RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
@@ -322,7 +322,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("years", "1916"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 	}
 
@@ -336,7 +336,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.param("years", "2003/2021"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_MOVIE_2003_DRAMA_ID,
 								RETURN_MOVIE_2021_SCIFI_ID)));
 	}
@@ -375,7 +375,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['1970 - 1980']").doesNotExist())
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2000 - 2010']").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.years['2020 - 2030']").value(1))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
 								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
 								RETURN_MOVIE_ROMANCE_ID)));
@@ -391,7 +391,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Short").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres.Romance").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.genres['Sci-Fi']").value(1))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
 								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
 								RETURN_MOVIE_ROMANCE_ID)));
@@ -405,7 +405,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.short").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.tvEpisode").value(1))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.aggregations.types.movie").value(3))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_TV_1960_WESTERN_ID,
 								RETURN_MOVIE_2003_DRAMA_ID, RETURN_MOVIE_2021_SCIFI_ID,
 								RETURN_MOVIE_ROMANCE_ID)));
@@ -415,7 +415,7 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].id")
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID, RETURN_MOVIE_2003_DRAMA_ID,
 								RETURN_MOVIE_ROMANCE_ID, RETURN_MOVIE_2021_SCIFI_ID,
 								RETURN_TV_1960_WESTERN_ID)));
