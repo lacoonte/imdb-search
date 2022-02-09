@@ -199,6 +199,56 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 	}
 
 	@Test
+	void paginationTest() throws Exception {
+		// First test that all four appear.
+		checkTheReturnNoFilter();
+
+		int testVal = 2;
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("rows",
+				Integer.toString(testVal)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items.length()")
+						.value(testVal));
+
+		// Test start at 4th (inclusive)
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("rows",
+				"4").param("start", "4"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items.length()")
+						.value(1));
+	}
+
+	@Test
+	void paginationTestStartAfterHitN() throws Exception {
+		// First test that all four appear.
+		checkTheReturnNoFilter();
+
+		// Now, if we start at 5, there should not be any result.
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("rows",
+				"4").param("start", "5"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items.length()")
+						.value(0));
+	}
+
+	@Test
+	void paginationTest0Rows() throws Exception {
+		// First test that all four appear.
+		checkTheReturnNoFilter();
+
+		int testVal = 0;
+		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("rows",
+				Integer.toString(testVal)))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.items.length()")
+						.value(testVal));
+	}
+
+	@Test
 	void searchWithMultipleGenreFilter() throws Exception {
 		// First test that all four appear with no filter.
 		checkTheReturnNoFilter();
@@ -231,16 +281,17 @@ class SearchControllerIntegrationTest extends ElasticContainerBaseTest {
 		// First test that all four appear with no filter.
 		checkTheReturnNoFilter();
 
-		// Now test the filter, only the short should appear ("short" is the exact type name)
+		// Now test the filter, only the short should appear ("short" is the exact type
+		// name)
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "SHORT"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
 				.andExpect(MockMvcResultMatchers.jsonPath("$.items[*].title.id")
 						.value(Matchers.containsInAnyOrder(RETURN_SHORT_1916_DRAMASHORT_ID)));
 
-		// Now test the filter, only the short should appear ("short" is the exact type name)
+		// Now test the filter, only the short should appear ("short" is the exact type
+		// name)
 
-		
 		mvc.perform(MockMvcRequestBuilders.get("/search").param("query", RETURN_MOVIE_NAME).param("types", "Short"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.content().contentType("application/json"))
