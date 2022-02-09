@@ -67,15 +67,7 @@ public class SearchServiceImpl implements SearchService {
                 var result = new SearchServiceResult(hitsN, titles, new Aggregations(genresAgg, typeAgg, rangesAgg));
                 return result;
             } else {
-                SuggestionBuilder<PhraseSuggestionBuilder> suggestRq = SuggestBuilders
-                        .phraseSuggestion("primaryTitle.trigram").text(query).gramSize(3);
-                var rqBuilder = new SearchSourceBuilder();
-                var suggestSearchRq = new SearchRequest();
-                var suggestBuilder = new SuggestBuilder();
-                suggestBuilder.addSuggestion("spellcheck", suggestRq);
-                rqBuilder.suggest(suggestBuilder);
-                suggestSearchRq.source(rqBuilder);
-                System.out.println(suggestSearchRq.source().toString());
+                var suggestSearchRq = buildRequest(query);
                 var suggestResponse = cli.search(suggestSearchRq, RequestOptions.DEFAULT);
                 PhraseSuggestion suggest = suggestResponse.getSuggest().getSuggestion("spellcheck");
                 var suggestions = suggest.getEntries().stream()
@@ -88,6 +80,18 @@ public class SearchServiceImpl implements SearchService {
         } catch (IOException e) {
             throw new ElasticUnavailableException(e);
         }
+    }
+
+    private SearchRequest buildRequest(String text) {
+        SuggestionBuilder<PhraseSuggestionBuilder> suggestRq = SuggestBuilders
+                .phraseSuggestion("primaryTitle.trigram").text(text).gramSize(3);
+        var rqBuilder = new SearchSourceBuilder();
+        var suggestSearchRq = new SearchRequest();
+        var suggestBuilder = new SuggestBuilder();
+        suggestBuilder.addSuggestion("spellcheck", suggestRq);
+        rqBuilder.suggest(suggestBuilder);
+        suggestSearchRq.source(rqBuilder);
+        return suggestSearchRq;
     }
 
     private Map<String, Long> getAggregation(String key, SearchResponse response) {

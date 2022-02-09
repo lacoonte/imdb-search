@@ -33,13 +33,13 @@ public class SearchTitleRequestBuilder {
     }
 
     public void addGenresFilter(List<String> genres) {
-        var genresQuery = buildBoolQueryBuilder();
+        var genresQuery = QueryBuilders.boolQuery().minimumShouldMatch(1);
         genres.forEach(genre -> genresQuery.should(QueryBuilders.termQuery("genres", genre).caseInsensitive(true)));
         queryBuilders.add(genresQuery);
     }
 
     public void addYearsFilter(List<YearFilter> filters) {
-        var rangesQuery = buildBoolQueryBuilder();
+        var rangesQuery = QueryBuilders.boolQuery().minimumShouldMatch(1);
         var areRanges = filters.stream().collect(Collectors.partitioningBy(x -> x.isRange()));
         areRanges.get(true).stream()
                 .map(range -> QueryBuilders.rangeQuery("startYear").gte(range.start()).lte(range.end()))
@@ -50,7 +50,7 @@ public class SearchTitleRequestBuilder {
     }
 
     public void addTypesFilter(List<String> types) {
-        var typesQuery = buildBoolQueryBuilder();
+        var typesQuery = QueryBuilders.boolQuery().minimumShouldMatch(1);
         types.forEach(type -> typesQuery.should(QueryBuilders.termQuery("type", type).caseInsensitive(true)));
         queryBuilders.add(typesQuery);
     }
@@ -74,11 +74,10 @@ public class SearchTitleRequestBuilder {
     }
 
     private QueryBuilder buildQueryBuilder() {
-        var result = new BoolQueryBuilder();
         var termQuery = QueryBuilders.termQuery("primaryTitle.raw", titleName).boost(10).caseInsensitive(true);
         var typeQuery = QueryBuilders.termQuery("type", "movie").boost(5);
         var titleQuery = QueryBuilders.matchPhraseQuery("primaryTitle", titleName);
-        result.should(termQuery).should(typeQuery).must(titleQuery);
+        var result = QueryBuilders.boolQuery().should(termQuery).should(typeQuery).must(titleQuery);
         var filtersN = queryBuilders.size();
         switch (filtersN) {
             case 0:
@@ -97,12 +96,6 @@ public class SearchTitleRequestBuilder {
         var gauss = ScoreFunctionBuilders.gaussDecayFunction("startYear", "2022", "1");
         var result = new FunctionScoreQueryBuilder(boolQueryBuilder, new FilterFunctionBuilder[]{new FunctionScoreQueryBuilder.FilterFunctionBuilder(gauss),new FunctionScoreQueryBuilder.FilterFunctionBuilder(nVotes)});
         result.scoreMode(ScoreMode.SUM);
-        return result;
-    }
-
-    private BoolQueryBuilder buildBoolQueryBuilder() {
-        var result = new BoolQueryBuilder();
-        result.minimumShouldMatch(1);
         return result;
     }
 }
